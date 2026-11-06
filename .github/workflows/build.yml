@@ -1,4 +1,5 @@
 
+
 name: Build PalletFinder APK
 
 on:
@@ -22,31 +23,15 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.9'
-
-      - name: Install Android SDK
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Prepare Android SDK
+      - name: Install Android SDK components
         run: |
-          sdkmanager "platform-tools"
-          sdkmanager "platforms;android-35"
-          sdkmanager "build-tools;35.0.0"
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Extract project
+      - name: Check project files
         run: |
-          unzip -q PalletFinderAndroid_Source.zip -d project
-
-      - name: Build APK
-        run: |
-          cd project
-          gradle assembleDebug
-
-      - name: Save APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: PalletFinder-APK
-          path: project/app/build/outputs/apk/debug/app-debug.apk
+          ls -la
+          unzip -l PalletFinderAndroid_Source.zip | head -40
