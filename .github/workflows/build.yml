@@ -42,6 +42,6 @@ jobs:
           cd project
           gradle wrapper
           chmod +x gradlew
-          ./gradlew assembleDebug
-
+         ./gradlew assembleDebug \
+         -Dorg.gradle.jvmargs="-Xmx2048m"
 
