@@ -1,5 +1,4 @@
 
-
 name: Build PalletFinder APK
 
 on:
@@ -31,16 +30,23 @@ jobs:
           yes | sdkmanager --licenses
           sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Check project files
+      - name: Extract project
         run: |
-          ls -la
-          unzip -l PalletFinderAndroid_Source.zip | head -40
-          
-       - name: Build APK
-         run: |
           unzip -o PalletFinderAndroid_Source.zip -d project
+
+      - name: Fix Java compatibility
+        run: |
+          sed -i '/android {/a\    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_17\n        targetCompatibility JavaVersion.VERSION_17\n    }\n    kotlinOptions {\n        jvmTarget = "17"\n    }' project/app/build.gradle.kts
+
+      - name: Build APK
+        run: |
           cd project
           gradle wrapper
           chmod +x gradlew
           ./gradlew assembleDebug
 
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PalletFinder-APK
+          path: project/app/build/outputs/apk/debug/app-debug.apk
