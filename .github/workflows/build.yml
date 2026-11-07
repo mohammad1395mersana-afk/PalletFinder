@@ -35,11 +35,13 @@ jobs:
         run: |
           ls -la
           unzip -l PalletFinderAndroid_Source.zip | head -40
-
+          
       - name: Build APK
         run: |
           unzip -o PalletFinderAndroid_Source.zip -d project
           cd project
+          gradle wrapper
           chmod +x gradlew
           ./gradlew assembleDebug
+
 
