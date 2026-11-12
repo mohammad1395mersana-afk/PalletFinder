@@ -1,1 +1,57 @@
 
+name: Build PalletFinder 2.0 APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'PalletFinder2_Source.zip'
+      - '.github/workflows/build-v2.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get project
+        uses: actions/checkout@v4
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android SDK components
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Extract project
+        run: |
+          unzip -o PalletFinder2_Source.zip -d project
+
+      - name: Fix Java and Kotlin compatibility
+        run: |
+          sed -i '/android {/a\    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }\n    kotlinOptions {\n        jvmTarget = "17"\n    }' project/palletfinder2/app/build.gradle.kts
+
+      - name: Build APK
+        run: |
+          cd project/palletfinder2
+          gradle wrapper
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PalletFinder-2.0-APK
+          path: project/palletfinder2/app/build/outputs/apk/debug/app-debug.apk
