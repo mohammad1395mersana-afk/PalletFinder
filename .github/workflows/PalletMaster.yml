@@ -57,7 +57,9 @@ jobs:
           """
           p.write_text(s)
           PY
-
+          src = Path("palletmaster/app/src/main/java/com/example/palletfinder/MainActivity.kt")
+          code = src.read_text()
+          src.write_text(code.replace("singleLine", "isSingleLine"))
       - name: Build APK
         uses: gradle/gradle-build-action@v3
         with:
