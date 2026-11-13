@@ -38,7 +38,10 @@ jobs:
       - name: Extract project
         run: |
           unzip -o PalletFinder2_Source.zip -d project
-
+          
+      - name: Set separate app ID
+        run: |
+          sed -i 's/applicationId = "[^"]*"/applicationId = "com.example.palletfinder2"/' project/palletfinder2/app/build.gradle.kts
       - name: Fix Android and Java compatibility
         run: |
           sed -i 's/minSdk = 23/minSdk = 26/' project/palletfinder2/app/build.gradle.kts
