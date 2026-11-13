@@ -32,6 +32,11 @@ jobs:
         run: unzip -o PalletMaster_Source.zip -d .
       - name: Fix Android minimum SDK
         run: sed -i 's/minSdk = 23/minSdk = 26/' palletmaster/app/build.gradle.kts
+             - name: Fix JVM target compatibility
+        run: |
+          sed -i '/android {/a\    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_17\n        targetCompatibility JavaVersion.VERSION_17\n    }' palletmaster/app/build.gradle.kts
+          sed -i '/plugins {/a\import org.jetbrains.kotlin.gradle.dsl.JvmTarget' palletmaster/app/build.gradle.kts
+          sed -i '/android {/i\kotlin {\n    compilerOptions {\n        jvmTarget.set(JvmTarget.JVM_17)\n    }\n}' palletmaster/app/build.gradle.kts 
       - name: Build APK
         uses: gradle/gradle-build-action@v3
         with:
