@@ -31,35 +31,12 @@ jobs:
       - name: Extract PalletMaster source
         run: unzip -o PalletMaster_Source.zip -d .
 
-      - name: Fix Android and JVM targets
+      - name: Fix Android and Kotlin settings
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path("palletmaster/app/build.gradle.kts")
-          s = p.read_text()
-          s = s.replace("minSdk = 23", "minSdk = 26")
-          s = s.replace(
-              "    }\n}",
-              """    }
+          sed -i 's/minSdk = 23/minSdk = 26/' palletmaster/app/build.gradle.kts
+          sed -i '/^android {/a\    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }\n    kotlinOptions {\n        jvmTarget = "17"\n    }' palletmaster/app/build.gradle.kts
+          sed -i 's/\bsingleLine\b/isSingleLine/g' palletmaster/app/src/main/java/com/example/palletfinder/MainActivity.kt
 
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-          }""",
-              1
-          )
-          s += """
-          
-          kotlin {
-              jvmToolchain(17)
-          }
-          """
-          p.write_text(s)
-          PY
-          src = Path("palletmaster/app/src/main/java/com/example/palletfinder/MainActivity.kt")
-          code = src.read_text()
-          src.write_text(code.replace("singleLine", "isSingleLine"))
       - name: Build APK
         uses: gradle/gradle-build-action@v3
         with:
