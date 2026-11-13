@@ -46,7 +46,8 @@ jobs:
 
       - name: Fix Kotlin source
         run: |
-          sed -i '/singleLine = true,/d' project/palletfinder2/app/src/main/java/com/example/palletfinder/MainActivity.kt
+          sed -i '/singleLine/d' project/palletfinder2/app/src/main/java/com/example/palletfinder/MainActivity.kt
+          grep -n 'singleLine' project/palletfinder2/app/src/main/java/com/example/palletfinder/MainActivity.kt && exit 1 || true
 
       - name: Build APK
         run: |
