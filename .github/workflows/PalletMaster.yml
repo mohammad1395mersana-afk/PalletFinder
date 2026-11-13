@@ -30,25 +30,34 @@ jobs:
 
       - name: Extract PalletMaster source
         run: unzip -o PalletMaster_Source.zip -d .
-      - name: Fix Android minimum SDK
-        run: sed -i 's/minSdk = 23/minSdk = 26/' palletmaster/app/build.gradle.kts
-              - name: Fix JVM target compatibility
+
+      - name: Fix Android and JVM targets
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path("palletmaster/app/build.gradle.kts")
           s = p.read_text()
-          s = s.replace("android {", """android {
+          s = s.replace("minSdk = 23", "minSdk = 26")
+          s = s.replace(
+              "    }\n}",
+              """    }
+
               compileOptions {
                   sourceCompatibility = JavaVersion.VERSION_17
                   targetCompatibility = JavaVersion.VERSION_17
               }
-              kotlinOptions {
-                  jvmTarget = "17"
-              }
-          """, 1)
+          }""",
+              1
+          )
+          s += """
+          
+          kotlin {
+              jvmToolchain(17)
+          }
+          """
           p.write_text(s)
           PY
+
       - name: Build APK
         uses: gradle/gradle-build-action@v3
         with:
