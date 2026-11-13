@@ -42,7 +42,9 @@ jobs:
       - name: Fix Android and Java compatibility 
         run: |
           sed -i 's/minSdk = 23/minSdk = 26/' project/palletfinder2/app/build.gradle.kts
-          sed -i '/android {/a\    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }\n    kotlinOptions {\n        jvmTarget = "17"\n    }' project/palletfinder2/app/build.gradle.kts
+         sed -i '/android {/a\    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }\n    kotlinOptions {\n        jvmTarget = "17"\n    }' project/palletfinder2/app/build.gradle.kts      - name: Fix Kotlin source
+        run: |
+          sed -i 's/^[[:space:]]*singleLine = true,//' project/palletfinder2/app/src/main/java/com/example/palletfinder/MainActivity.kt
       - name: Build APK
         run: |
           cd project/palletfinder2
